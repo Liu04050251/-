@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>轨迹处理系统</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/features.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* 动态切换相关样式 */
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active-section {
+            display: block;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .sidebar li.active {
+            background: rgba(0, 123, 255, 0.1);
+            border-left: 3px solid #007bff;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <div class="header-content">
+            <h1><i class="fas fa-map-marked-alt"></i> 轨迹处理系统</h1>
+            <nav>
+                <span class="login-username">欢迎，管理员</span>
+                <a href="../html/login.html" class="logout-btn"><i class="fas fa-sign-out-alt"></i> 登出</a>
+            </nav>
+        </div>
+    </div>
+    <div class="layout">
+        <aside class="sidebar">
+            <ul>
+                <li class="active" data-section="preprocess">
+                    <a href="#preprocess"><i class="fas fa-database"></i> 数据预处理</a>
+                </li>
+                <li data-section="cleaning">
+                    <a href="#cleaning"><i class="fas fa-broom"></i> 数据清洗和可视化</a>
+                </li>
+                <li data-section="division">
+                    <a href="#division"><i class="fas fa-code-branch"></i> 数据集划分</a>
+                </li>
+                <li data-section="lstm">
+                    <a href="#lstm"><i class="fas fa-network-wired"></i> LSTM模型训练</a>
+                </li>
+                <li data-section="visualization">
+                    <a href="#visualization"><i class="fas fa-chart-line"></i> 结果可视化</a>
+                </li>
+                <li data-section="federated">
+                    <a href="#federated"><i class="fas fa-robot"></i> 联邦学习训练</a>
+                </li>
+                <li data-section="history">
+                    <a href="#history"><i class="fas fa-history"></i> 历史查询</a>
+                </li>
+            </ul>
+        </aside>
+        <main class="main-content">
+            <!-- 数据预处理 -->
+            <div class="content-section active-section" id="preprocess-section">
+                <div class="content-header">
+                    <h2><i class="fas fa-database"></i> 数据预处理</h2>
+                    <p class="subtitle">上传并预处理轨迹数据，为后续分析做准备</p>
+                </div>
+
+                <div class="data-input-section">
+                    <div class="form-group">
+                        <label><i class="fas fa-folder-open"></i> 数据目录</label>
+                        <input type="text" id="data-root" placeholder="输入数据目录路径">
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fas fa-save"></i> 输出目录</label>
+                        <input type="text" id="save-dir" placeholder="输入输出目录路径">
+                    </div>
+
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" onclick="startPreprocessing()">
+                            <i class="fas fa-play"></i> 开始处理
+                        </button>
+                    </div>
+                </div>
+
+                <div class="status-indicator">
+                    <h3><i class="fas fa-info-circle"></i> 系统状态</h3>
+                    <div class="progress-container">
+                        <div class="progress-info">
+                            <span>处理进度</span>
+                        </div>
+                        <div id="progress">
+                            <div id="progress-bar"></div>
+                        </div>
+                        <p id="status" class="status-message">准备就绪，等待开始处理...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 数据清洗和可视化 -->
+            <div class="content-section" id="cleaning-section">
+                <div class="content-header">
+                    <h2><i class="fas fa-broom"></i> 数据清洗和可视化</h2>
+                    <p class="subtitle">自动执行数据清洗与降采样处理</p>
+                </div>
+                <div class="data-input-section">
+                    <div class="form-group">
+                        <label><i class="fas fa-folder-open"></i> 原始数据目录</label>
+                        <input type="text" id="raw-data-dir" placeholder="输入原始数据路径">
+                    </div>
+                    <div class="form-group">  <!-- 新增保存目录输入 -->
+                        <label><i class="fas fa-save"></i> 保存目录</label>
+                        <input type="text" id="clean-save-dir" placeholder="输入保存目录路径">
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" onclick="startCleaning()">
+                            <i class="fas fa-play"></i> 开始清洗
+                        </button>
+                    </div>
+                </div>
+                <div class="status-indicator">
+                    <h3><i class="fas fa-info-circle"></i> 清洗统计</h3>
+                    <div class="data-stats">
+                        <div class="stat-card">
+                            <div class="stat-title">原始数据量</div>
+                            <div class="stat-value" id="raw-count">0</div>
+                            <div class="stat-unit">条轨迹</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-title">清洗后数据量</div>
+                            <div class="stat-value" id="clean-count">0</div>
+                            <div class="stat-unit">条轨迹</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-title">降采样数据量</div>
+                            <div class="stat-value" id="downsample-count">0</div>
+                            <div class="stat-unit">条轨迹</div>
+                        </div>
+                    </div>
+                    <h3><i class="fas fa-chart-area"></i> 可视化结果</h3>
+                    <div class="visualization-container" id="clean-vis-container">
+                        <!-- 可视化图表将在此动态加载 -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- 数据集划分 -->
+            <div class="content-section" id="division-section">
+                <div class="content-header">
+                    <h2><i class="fas fa-code-branch"></i> 数据集划分</h2>
+                    <p class="subtitle">将数据划分为训练集、验证集和测试集</p>
+                </div>
+                <div class="data-input-section">
+                    <div class="form-group">
+                        <label><i class="fas fa-folder-open"></i> 原始数据目录</label>
+                        <input type="text" id="originalDir" placeholder="输入待处理数据目录">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-save"></i> 保存目录</label>
+                        <input type="text" id="saveDir" placeholder="输入结果保存路径">
+                    </div>
+                    <!-- 装饰性比例显示 -->
+                    <div class="form-group decorational-ratio">
+                        <label><i class="fas fa-chart-pie"></i> 默认划分比例</label>
+                        <div class="ratio-display">
+                            <span class="ratio-box train">训练集 80%</span>
+                            <span class="ratio-box val">验证集 10%</span>
+                            <span class="ratio-box test">测试集 10%</span>
+                        </div>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" onclick="startDivision()">
+                            <i class="fas fa-play"></i> 开始划分
+                        </button>
+                    </div>
+                    <!-- 简化后的状态指示器 -->
+                    <div class="status-indicator">
+                        <h3><i class="fas fa-info-circle"></i> 系统状态</h3>
+                        <div class="text-status-container">
+                            <p id="division-status" class="status-message">准备就绪，等待开始处理...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- LSTM模型训练 -->
+            <div class="content-section" id="lstm-section">
+                <div class="content-header">
+                    <h2><i class="fas fa-network-wired"></i> LSTM模型训练</h2>
+                    <p class="subtitle">训练长短期记忆神经网络模型</p>
+                </div>
+                <div class="data-input-section">
+                    <div class="form-group">
+                        <label><i class="fas fa-folder-open"></i> 训练数据目录</label>
+                        <input type="text" id="lstm-input" placeholder="输入训练数据路径">
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" onclick="startLSTMTraining()">
+                            <i class="fas fa-play"></i> 开始训练
+                        </button>
+                    </div>
+                    <!-- 增强后的状态指示器 -->
+                    <div class="status-indicator">
+                        <h3><i class="fas fa-info-circle"></i> 训练状态</h3>
+                        <div class="progress-container">
+                            <div class="progress-info">
+                                <span>训练进度</span>
+                                <span id="epoch-progress">0/50</span>
+                            </div>
+                            <div class="progress">
+                                <div id="training-progress" class="progress-bar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div class="loss-display">
+                            <div class="loss-item">
+                                <span class="loss-label">训练损失</span>
+                                <span id="train-loss" class="loss-value">0.000000</span>
+                            </div>
+                            <div class="loss-item">
+                                <span class="loss-label">验证损失</span>
+                                <span id="val-loss" class="loss-value">0.000000</span>
+                            </div>
+                        </div>
+                        <div class="final-result">
+                            <p id="lstm-status" class="status-message">准备就绪，等待开始处理...</p>
+                            <div id="test-result" class="test-loss">
+                                <span class="result-label">测试集损失：</span>
+                                <span id="test-loss-value" class="result-value">0.000000</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 结果可视化 -->
+            <div class="content-section" id="visualization-section">
+                <div class="content-header">
+                    <h2><i class="fas fa-chart-line"></i> 结果可视化</h2>
+                    <p class="subtitle">查看模型预测效果与误差指标</p>
+                </div>
+                <div class="data-input-section">
+                    <div class="form-group">
+                        <label><i class="fas fa-folder-open"></i> 模型目录</label>
+                        <input type="text" id="model-dir" placeholder="输入训练好的模型路径">
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" onclick="generateResultVisualization()">
+                            <i class="fas fa-chart-bar"></i> 生成可视化
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 新增误差指标显示 -->
+                <div class="status-indicator">
+                    <h3><i class="fas fa-info-circle"></i> 误差指标</h3>
+                    <div class="data-stats">
+                        <div class="stat-card">
+                            <div class="stat-title">均方误差</div>
+                            <div class="stat-value" id="mse-value">0.000000</div>
+                            <div class="stat-unit">MSE</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-title">平均绝对误差</div>
+                            <div class="stat-value" id="mae-value">0.000000</div>
+                            <div class="stat-unit">MAE</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-title">均方根误差</div>
+                            <div class="stat-value" id="rmse-value">0.000000</div>
+                            <div class="stat-unit">RMSE</div>
+                        </div>
+                    </div>
+
+                    <!-- 可视化结果区域 -->
+                    <h3><i class="fas fa-chart-area"></i> 轨迹对比</h3>
+                    <div class="visualization-container" id="result-vis-container">
+                        <div id="plot-loading" class="loading-spinner" style="display: none;"></div>
+                        <img id="result-plot" src="" alt="预测结果可视化"
+                             style="max-width: 100%; height: auto; border: 1px solid #ddd; padding: 10px;">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 联邦学习训练 -->
+            <div class="content-section" id="federated-section">
+                <div class="content-header">
+                    <h2><i class="fas fa-robot"></i> 联邦学习训练</h2>
+                    <p class="subtitle">分布式训练模型，保护数据隐私</p>
+                </div>
+                <div class="data-input-section">
+                    <!-- 修改后的数据目录输入 -->
+                    <div class="form-group">
+                        <label><i class="fas fa-folder-open"></i> 数据目录</label>
+                        <input type="text" id="federated-data-dir" placeholder="输入统一数据目录路径">
+                    </div>
+
+                    <!-- 修改后的联邦参数 -->
+                    <div class="form-group">
+                        <label><i class="fas fa-sliders-h"></i> 联邦参数</label>
+                        <div class="federated-params">
+                            <div>
+                                <label>虚拟客户端数量</label>
+                                <input type="number" id="num-clients" min="1" value="5">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" onclick="startFederatedTraining()">
+                            <i class="fas fa-play"></i> 开始联邦训练
+                        </button>
+                    </div>
+
+                    <!-- 新增结果展示区域 -->
+                    <div class="status-indicator">
+                        <h3><i class="fas fa-info-circle"></i> 训练状态</h3>
+
+                        <!-- 进度条 -->
+                        <div class="progress-container">
+                            <div class="progress-info">
+                                <span>联邦轮次进度</span>
+                                <span id="round-progress">0/10</span>
+                            </div>
+                            <div class="progress">
+                                <div id="federated-progress" class="progress-bar" style="width: 0%"></div>
+                            </div>
+                        </div>
+
+                        <!-- 客户端训练详情 -->
+                        <div class="training-details">
+                            <div class="detail-card">
+                                <h4><i class="fas fa-microchip"></i> 客户端训练状态</h4>
+                                <div class="client-list" id="client-training-status"style="max-height: 200px; overflow-y: auto; margin: 10px 0;">
+                                    <!-- 动态生成客户端训练信息 -->
+                                </div>
+                            </div>
+
+                            <!-- 验证结果 -->
+                            <div class="detail-card">
+                                <h4><i class="fas fa-chart-bar"></i> 最新验证结果</h4>
+                                <div class="validation-metrics">
+                                    <div class="metric">
+                                        <span class="metric-label">MSE</span>
+                                        <span class="metric-value" id="current-mse">0.000000</span>
+                                    </div>
+                                    <div class="metric">
+                                        <span class="metric-label">MAE</span>
+                                        <span class="metric-value" id="current-mae">0.000000</span>
+                                    </div>
+                                    <div class="metric">
+                                        <span class="metric-label">R² Score</span>
+                                        <span class="metric-value" id="current-r2">0.000000</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 可视化图表 -->
+                        <div class="visualization-container">
+                            <h4><i class="fas fa-chart-line"></i> 损失变化趋势</h4>
+                            <div id="loss-plot-container">
+                                <img id="loss-plot" src="" alt="损失变化图表"
+                                     style="max-width: 100%; height: auto; border: 1px solid #ddd; padding: 10px;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+<!--            &lt;!&ndash; 历史查询 &ndash;&gt;-->
+<!--            <div class="content-section" id="history-section">-->
+<!--                <div class="content-header">-->
+<!--                    <h2><i class="fas fa-history"></i> 历史查询</h2>-->
+<!--                    <p class="subtitle">查看历史操作记录和结果</p>-->
+<!--                </div>-->
+<!--                <div class="data-input-section">-->
+<!--                    <div class="form-group">-->
+<!--                        <label><i class="fas fa-filter"></i> 筛选条件</label>-->
+<!--                        <select id="history-filter">-->
+<!--                            <option value="all">全部记录</option>-->
+<!--                            <option value="preprocess">数据预处理</option>-->
+<!--                            <option value="cleaning">数据清洗</option>-->
+<!--                            <option value="training">模型训练</option>-->
+<!--                        </select>-->
+<!--                    </div>-->
+<!--                    <div class="action-buttons">-->
+<!--                        <button class="btn btn-primary" onclick="loadHistory()">-->
+<!--                            <i class="fas fa-search"></i> 查询-->
+<!--                        </button>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--                <div class="history-table-container">-->
+<!--                    <table class="history-table">-->
+<!--                        <thead>-->
+<!--                        <tr>-->
+<!--                            <th>操作时间</th>-->
+<!--                            <th>操作类型</th>-->
+<!--                            <th>输入参数</th>-->
+<!--                            <th>状态</th>-->
+<!--                            <th>操作</th>-->
+<!--                        </tr>-->
+<!--                        </thead>-->
+<!--                        <tbody id="history-table-body">-->
+<!--                        &lt;!&ndash; 历史记录将在这里动态加载 &ndash;&gt;-->
+<!--                        </tbody>-->
+<!--                    </table>-->
+<!--                </div>-->
+<!--            </div>-->
+        </main>
+    </div>
+</div>
+<script src="../js/app.js"></script>
+<script>
+    // 动态切换功能
+    document.addEventListener('DOMContentLoaded', function () {
+        // 初始化显示第一个区块
+        document.querySelector('.content-section').classList.add('active-section');
+
+        // 菜单点击事件
+        document.querySelectorAll('.sidebar li').forEach(menuItem => {
+            menuItem.addEventListener('click', function (e) {
+                e.preventDefault();
+
+                // 移除所有激活状态
+                document.querySelectorAll('.sidebar li').forEach(item => {
+                    item.classList.remove('active');
+                });
+                document.querySelectorAll('.content-section').forEach(section => {
+                    section.classList.remove('active-section');
+                });
+
+                // 设置当前激活状态
+                const sectionId = this.getAttribute('data-section');
+                this.classList.add('active');
+                document.getElementById(`${sectionId}-section`).classList.add('active-section');
+
+                // 更新URL哈希
+                window.location.hash = sectionId;
+            });
+        });
+
+        // 处理URL哈希变化
+        window.addEventListener('hashchange', handleHashChange);
+        handleHashChange();
+
+        function handleHashChange() {
+            const section = window.location.hash.substring(1);
+            if (section) {
+                const target = document.querySelector(`[data-section="${section}"]`);
+                if (target) target.click();
+            }
+        }
+    });
+
+    // 占位函数 - 实际功能需要根据您的app.js实现
+    //function startPreprocessing() { alert('预处理功能将在app.js中实现'); }
+    // function startCleaning() {
+    //     alert('数据清洗功能将在app.js中实现');
+    // }
+
+    // function generateVisualization() {
+    //     alert('可视化功能将在app.js中实现');
+    // }
+
+    // function startDivision() {
+    //     alert('数据集划分功能将在app.js中实现');
+    // }
+
+    // function startLSTMTraining() {
+    //     alert('LSTM训练功能将在app.js中实现');
+    // }
+    //
+    // function generateResultVisualization() {
+    //     alert('结果可视化功能将在app.js中实现');
+    // }
+
+    // function startFederatedTraining() {
+    //     alert('联邦学习功能将在app.js中实现');
+    // }
+
+    // function loadHistory() {
+    //     alert('历史查询功能将在app.js中实现');
+    // }
+
+
+</script>
+</body>
+</html>

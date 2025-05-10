@@ -1,0 +1,377 @@
+/* 基础样式重置 */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Roboto', 'Microsoft YaHei', sans-serif;
+  color: #333;
+  line-height: 1.6;
+}
+
+/* 容器样式 */
+.container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* 头部样式 */
+.header {
+  background: linear-gradient(135deg, #1e5799 0%, #207cca 100%);
+  color: white;
+  padding: 0 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 15px 0;
+}
+
+.header h1 {
+  font-size: 24px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+}
+
+.header h1 i {
+  margin-right: 10px;
+  font-size: 22px;
+}
+
+/* 导航样式 */
+nav {
+  display: flex;
+  align-items: center;
+}
+
+.username {
+  margin-right: 20px;
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+.logout-btn {
+  color: white;
+  text-decoration: none;
+  font-size: 14px;
+  padding: 8px 15px;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+  display: flex;
+  align-items: center;
+}
+
+.logout-btn:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.logout-btn i {
+  margin-right: 5px;
+}
+
+/* 布局样式 */
+.layout {
+  display: flex;
+  flex: 1;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* 侧边栏样式 */
+.sidebar {
+  width: 220px;
+  background-color: white;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+  padding: 20px 0;
+}
+
+.sidebar ul {
+  list-style: none;
+}
+
+.sidebar li {
+  margin-bottom: 5px;
+}
+
+.sidebar a {
+  display: flex;
+  align-items: center;
+  padding: 12px 20px;
+  color: #555;
+  text-decoration: none;
+  transition: all 0.3s;
+  font-size: 15px;
+}
+
+.sidebar a:hover {
+  background-color: #f0f4f8;
+  color: #1e5799;
+}
+
+.sidebar a i {
+  margin-right: 10px;
+  width: 20px;
+  text-align: center;
+  font-size: 16px;
+}
+
+.sidebar li.active a {
+  background-color: #e3f2fd;
+  color: #1e5799;
+  border-left: 3px solid #1e5799;
+}
+
+/* 主内容区样式 */
+.main-content {
+  flex: 1;
+  padding: 30px;
+  background-color: #f8fafc;
+}
+
+.content-header {
+  margin-bottom: 25px;
+}
+
+.content-header h2 {
+  font-size: 22px;
+  color: #333;
+  display: flex;
+  align-items: center;
+}
+
+.content-header h2 i {
+  margin-right: 10px;
+  color: #1e5799;
+}
+
+.subtitle {
+  color: #666;
+  font-size: 14px;
+  margin-top: 5px;
+}
+
+/* 卡片样式 */
+.card {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+  margin-bottom: 30px;
+  overflow: hidden;
+}
+
+.card-body {
+  padding: 25px;
+}
+
+/* 表单样式 */
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #444;
+}
+
+.form-group label i {
+  margin-right: 8px;
+  color: #666;
+}
+
+input[type="text"], input[type="password"] {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: border-color 0.3s;
+}
+
+input:focus {
+  border-color: #4a6bff;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(74, 107, 255, 0.1);
+}
+
+/* 按钮样式 */
+.btn {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn i {
+  margin-right: 8px;
+}
+
+.btn-primary {
+  background-color: #4a6bff;
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #3a5bef;
+}
+
+.btn-secondary {
+  background-color: #f0f4f8;
+  color: #555;
+  margin-left: 10px;
+}
+
+.btn-secondary:hover {
+  background-color: #e0e8f0;
+}
+
+.form-actions {
+  margin: 25px 0;
+}
+
+/* 进度条样式 */
+.progress-container {
+  margin-top: 20px;
+}
+
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-size: 14px;
+  color: #555;
+}
+
+#progress {
+  height: 10px;
+  background-color: #f0f4f8;
+  border-radius: 5px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+#progress-bar {
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, #4a6bff, #3a5bef);
+  transition: width 0.3s;
+}
+
+.status-message {
+  font-size: 14px;
+  color: #555;
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.status-message i {
+  margin-right: 8px;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .layout {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    padding: 10px 0;
+  }
+
+  .sidebar ul {
+    display: flex;
+    overflow-x: auto;
+    padding: 0 10px;
+  }
+
+  .sidebar li {
+    margin-bottom: 0;
+    margin-right: 5px;
+  }
+
+  .sidebar a {
+    padding: 10px 15px;
+    white-space: nowrap;
+  }
+
+  .main-content {
+    padding: 20px;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+  }
+
+  .btn {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+}
+
+/* 新增保存目录输入框样式 */
+#save-dir {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-top: 5px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+/* 可视化图片自适应，但限制最大高度，避免撑爆页面 */
+.visualization-img {
+  max-width: 100%;       /* 宽度不超过容器 */
+  max-height: 400px;     /* 高度不超过 400px */
+  object-fit: contain;   /* 保持长宽比 */
+  display: block;
+  margin: 10px auto;     /* 居中并上下留白 */
+}
+.ratio-inputs {
+    display: flex;
+    gap: 10px;
+}
+
+.ratio-inputs input {
+    width: 90px;
+    text-align: center;
+}
+
+#ratio-sum {
+    color: #28a745;
+    font-weight: bold;
+}
+
+.form-text.text-muted {
+    margin-top: 5px;
+    font-size: 0.9em;
+}
+.status-message.processing {
+    color: #007bff;
+}
+.status-message.success {
+    color: #28a745;
+}
+.status-message.error {
+    color: #dc3545;
+}
+
